@@ -7,6 +7,7 @@ import numpy as np
 from torch.utils import data
 import yaml
 import pickle
+from pypcd import pypcd
 
 REGISTERED_PC_DATASET_CLASSES = {}
 
@@ -47,7 +48,21 @@ class SemKITTI_demo(data.Dataset):
         return len(self.im_idx)
 
     def __getitem__(self, index):
-        raw_data = np.fromfile(self.im_idx[index], dtype=np.float32).reshape((-1, 4))
+        file_path = self.im_idx[index]
+        if file_path.endswith(".pcd"):
+            pc = pypcd.PointCloud.from_path(file_path)
+            raw_data = np.empty((pc.points, 4), dtype=np.float32)
+            raw_data[:, 0] = pc.pc_data['x']
+            raw_data[:, 1] = pc.pc_data['y']
+            raw_data[:, 2] = pc.pc_data['z']
+            raw_data[:, 3] = pc.pc_data['intensity'] / 255.0
+
+            raw_data = raw_data[(raw_data[:, 0] > 3.0) & (raw_data[:, 0] < 150.0) \
+                                & (raw_data[:, 3] > -3.0) & (raw_data[:, 3] < 3)]
+        else:
+            raw_data = np.fromfile(file_path, dtype=np.float32)
+            raw_data = raw_data.reshape((-1, 4))
+
         if self.imageset == 'demo':
             annotated_data = np.expand_dims(np.zeros_like(raw_data[:, 0], dtype=int), axis=1)
         elif self.imageset == 'val':
@@ -55,7 +70,7 @@ class SemKITTI_demo(data.Dataset):
             annotated_data = annotated_data & 0xFFFF  # delete high 16 digits binary
             annotated_data = np.vectorize(self.learning_map.__getitem__)(annotated_data)
 
-        data_tuple = (raw_data[:, :3], annotated_data.astype(np.uint8))
+        data_tuple = (index, raw_data[:, :3], annotated_data.astype(np.uint8))
         if self.return_ref:
             data_tuple += (raw_data[:, 3],)
         return data_tuple

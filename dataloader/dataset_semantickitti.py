@@ -190,10 +190,10 @@ class cylinder_dataset(data.Dataset):
     def __getitem__(self, index):
         'Generates one sample of data'
         data = self.point_cloud_dataset[index]
-        if len(data) == 2:
-            xyz, labels = data
-        elif len(data) == 3:
-            xyz, labels, sig = data
+        if len(data) == 3:
+            file_idx, xyz, labels = data
+        elif len(data) == 4:
+            file_idx, xyz, labels, sig = data
             if len(sig.shape) == 2: sig = np.squeeze(sig)
         else:
             raise Exception('Return invalid data tuple')
@@ -263,15 +263,16 @@ class cylinder_dataset(data.Dataset):
         return_xyz = xyz_pol - voxel_centers
         return_xyz = np.concatenate((return_xyz, xyz_pol, xyz[:, :2]), axis=1)
 
-        if len(data) == 2:
+        if len(data) == 3:
             return_fea = return_xyz
-        elif len(data) == 3:
+        elif len(data) == 4:
             return_fea = np.concatenate((return_xyz, sig[..., np.newaxis]), axis=1)
 
         if self.return_test:
             data_tuple += (grid_ind, labels, return_fea, index)
         else:
             data_tuple += (grid_ind, labels, return_fea)
+        data_tuple += (file_idx,)
         return data_tuple
 
 
@@ -376,7 +377,7 @@ class polar_dataset(data.Dataset):
         return data_tuple
 
 
-@nb.jit('u1[:,:,:](u1[:,:,:],i8[:,:])', nopython=True, cache=True, parallel=False)
+# @nb.jit('u1[:,:,:](u1[:,:,:],i8[:,:])', nopython=True, cache=True, parallel=False)
 def nb_process_label(processed_label, sorted_label_voxel_pair):
     label_size = 256
     counter = np.zeros((label_size,), dtype=np.uint16)
@@ -399,7 +400,8 @@ def collate_fn_BEV(data):
     grid_ind_stack = [d[2] for d in data]
     point_label = [d[3] for d in data]
     xyz = [d[4] for d in data]
-    return torch.from_numpy(data2stack), torch.from_numpy(label2stack), grid_ind_stack, point_label, xyz
+    idxs = [d[5] for d in data]
+    return torch.from_numpy(data2stack), torch.from_numpy(label2stack), grid_ind_stack, point_label, xyz, idxs
 
 
 def collate_fn_BEV_test(data):

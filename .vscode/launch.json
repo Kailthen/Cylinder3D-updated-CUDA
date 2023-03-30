@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: demo_folder",
+            "type": "python",
+            "request": "launch",
+            "program": "infer.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--scan_path",
+                "/media/work/2t/datasets/biaozhi_parsed//20230316/0000.0.1054/center_lidar/data",
+                // "/media/work/2t/kitti-raw/raw/2011_09_30/2011_09_30_drive_0016_sync/velodyne_points/data",
+                // "/media/work/2t/datasets/kittiraw_parsed/20110930/0016.0.279_out/center_lidar/data",
+                "--output_dir",
+                "/media/work/2t/datasets/biaozhi_parsed//20230316/0000.0.1054/lidar_semantic_cylinder3d/center_lidar"
+                // "/media/work/2t/datasets/kittiraw_parsed/20110930/0016.0.279_out/lidar_semantic_cylinder3d/center_lidar"
+            ]
+        },
+        {
+            "name": "Python: vis",
+            "type": "python",
+            "request": "launch",
+            "program": "viz_o3d.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--scan_path",
+                "/media/work/2t/datasets/biaozhi_parsed//20230316/0000.0.1054/center_lidar/data",
+                // "/media/work/2t/datasets/kittiraw_parsed/20110930/0016.0.279_out/center_lidar/data",
+                "--label_path",
+                "/media/work/2t/datasets/biaozhi_parsed//20230316/0000.0.1054/lidar_semantic_cylinder3d/center_lidar"
+                // "/media/work/2t/datasets/kittiraw_parsed/20110930/0016.0.279_out/lidar_semantic_cylinder3d/center_lidar"
+            ]
+        }
+    ]
+}
