@@ -7,7 +7,8 @@ import numpy as np
 from torch.utils import data
 import yaml
 import pickle
-from pypcd import pypcd
+
+from utils.pc_utils import read_to_df
 
 REGISTERED_PC_DATASET_CLASSES = {}
 
@@ -50,15 +51,12 @@ class SemKITTI_demo(data.Dataset):
     def __getitem__(self, index):
         file_path = self.im_idx[index]
         if file_path.endswith(".pcd"):
-            pc = pypcd.PointCloud.from_path(file_path)
-            raw_data = np.empty((pc.points, 4), dtype=np.float32)
-            raw_data[:, 0] = pc.pc_data['x']
-            raw_data[:, 1] = pc.pc_data['y']
-            raw_data[:, 2] = pc.pc_data['z']
-            raw_data[:, 3] = pc.pc_data['intensity'] / 255.0
-
-            raw_data = raw_data[(raw_data[:, 0] > 3.0) & (raw_data[:, 0] < 150.0) \
-                                & (raw_data[:, 3] > -3.0) & (raw_data[:, 3] < 3)]
+            df, _ = read_to_df(file_path)
+            raw_data = np.empty((len(df), 4), dtype=np.float32)
+            raw_data[:, 0] = df['x'].to_numpy()
+            raw_data[:, 1] = df['y'].to_numpy()
+            raw_data[:, 2] = df['z'].to_numpy()
+            raw_data[:, 3] = df['intensity'].to_numpy() / 255.0
         else:
             raw_data = np.fromfile(file_path, dtype=np.float32)
             raw_data = raw_data.reshape((-1, 4))

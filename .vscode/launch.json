@@ -30,10 +30,11 @@
             "justMyCode": true,
             "args": [
                 "--scan_path",
-                "/media/work/2t/datasets/biaozhi_parsed//20230316/0000.0.1054/center_lidar/data",
+                // "/media/work/2t/datasets/biaozhi_parsed//20230415/0000.1000.2000/center_lidar/data",
                 // "/media/work/2t/datasets/kittiraw_parsed/20110930/0016.0.279_out/center_lidar/data",
+                "/media/work/2t/datasets/argo2_parsed/train012/dc9c2d63-083f-32c3-90ff-943ca823a245.0.157/center_lidar/data",
                 "--label_path",
-                "/media/work/2t/datasets/biaozhi_parsed//20230316/0000.0.1054/lidar_semantic_cylinder3d/center_lidar"
+                "/media/work/2t/datasets/argo2_parsed/train012/dc9c2d63-083f-32c3-90ff-943ca823a245.0.157/lidar_semantic_cylinder3d/center_lidar"
                 // "/media/work/2t/datasets/kittiraw_parsed/20110930/0016.0.279_out/lidar_semantic_cylinder3d/center_lidar"
             ]
         }
