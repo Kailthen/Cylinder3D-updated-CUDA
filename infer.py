@@ -76,14 +76,15 @@ def main(args):
     num_class = model_config['num_class']
     ignore_label = dataset_config['ignore_label']
     model_load_path = train_hypers['model_load_path']
+    if args.weight_file is not None:
+        model_load_path = args.weight_file
 
     SemKITTI_label_name = get_SemKITTI_label_name(dataset_config["label_mapping"])
     unique_label = np.asarray(sorted(list(SemKITTI_label_name.keys())))[1:] - 1
     unique_label_str = [SemKITTI_label_name[x] for x in unique_label + 1]
 
     my_model = model_builder.build(model_config)
-    if os.path.exists(model_load_path):
-        my_model = load_checkpoint(model_load_path, my_model)
+    my_model = load_checkpoint(model_load_path, my_model)
 
     my_model.to(pytorch_device)
     optimizer = optim.Adam(my_model.parameters(), lr=train_hypers["learning_rate"])
@@ -147,6 +148,7 @@ if __name__ == '__main__':
     parser.add_argument('--scan_path', type=str, default='', help='path to the folder containing demo lidar scans', required=True)
     parser.add_argument('--output_dir', type=str, default='', help='path to save your result', required=True)
     parser.add_argument('--demo-label-folder', type=str, default='', help='path to the folder containing demo labels')
+    parser.add_argument('--weight_file', type=str, default=None, help='path to weight file')
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)

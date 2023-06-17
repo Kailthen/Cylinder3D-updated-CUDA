@@ -1,13 +1,17 @@
 # -*- coding:utf-8 -*-
-# author: Xinge
-# @file: load_save_util.py 
-
+import os
 import torch
 
 
 def load_checkpoint(model_load_path, model):
     my_model_dict = model.state_dict()
-    pre_weight = torch.load(model_load_path)
+
+    if model_load_path.startswith("http"):
+        # download 
+        torch.hub.load_state_dict_from_url(model_load_path)
+    weight_path = torch.hub.get_dir() + "/checkpoints/" + os.path.basename(model_load_path)
+    print("Load from {weight_path}")
+    pre_weight = torch.load(weight_path)
 
     part_load = {}
     match_size = 0
